@@ -37,7 +37,7 @@ aisc.ST_shapes
 aisc.W_shapes
 aisc.WT_shapes
 ```
-From there, specific profiles and properties are queried in a similar manner:
+From there, specific sections and properties are queried in a similar manner:
 ```
 beam = aisc.W_shapes.W12X26
 Fy = 50
@@ -45,12 +45,12 @@ Aw = beam.d * beam.tw
 Cv = 1.0
 Vn = 0.6*Fy*Aw*Cv
 ```
-Shapes with fractions, hyphens or decimal points in their names are queried by replacing each with underscore:
+Sections with fractions, hyphens or decimal points in their names are queried by replacing each with underscore:
 ```
 aisc.C_shapes.C12X20_7
 aisc.L_shapes.L4X4X1_4
 aisc.W_shapes.W6X8_5
 ```
-Values are consistent with the AISC Steel Construction Manual, 16th Ed. and use the imperial system (inches, lbs).  .xlsx files for each library of shapes is saved in steelpy > shape files and can be referenced for the available shape profiles and associated properties.
+Values are consistent with the AISC Steel Construction Manual, 16th Ed. and use the imperial system (inches, lbs).  .csv files for each library of shapes is saved in steelpy > shape files and can be referenced for the available shape profiles and associated properties.
 
 
