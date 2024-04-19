@@ -4,18 +4,46 @@ import os
 import glob
 
 class Steel:
-    def __init__(self):
-        self.variables = {}
+    def __init__(self, name):
+        self.name = name
+        self.profiles = {}
 
     def add_variable(self, name, value):
-        self.variables[name] = value
+        self.profiles[name] = value
 
     def __getattr__(self, name):
-        if name in self.variables:
-            return self.variables[name]
-        raise AttributeError(f"'DynamicVariables' object has no attribute '{name}'")
+        if name in self.profiles:
+            return self.profiles[name]
+        raise AttributeError(f"'Steel' object has no attribute '{name}'")
     
-aisc = Steel()
+class Profile:
+    def __init__(self, name):
+        self.name = name
+        self.sections = {}
+
+    def add_variable(self, name, value):
+        self.sections[name] = value
+
+    def __getattr__(self, name):
+        if name in self.sections:
+            return self.sections[name]
+        raise AttributeError(f"'Profile' object has no attribute '{name}'")
+    
+class Section:
+    def __init__(self, name):
+        self.name = name
+        self.properties = {}
+
+    def add_variable(self, name, value):
+        self.sections[name] = value
+
+    def __getattr__(self, name):
+        if name in self.sections:
+            return self.sections[name]
+        raise AttributeError(f"'Section' object has no attribute '{name}'")
+    
+    
+aisc = Steel('aisc')
 
 # Get the directory of the currently executing module
 module_dir = os.path.dirname(__file__)
