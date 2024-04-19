@@ -42,7 +42,6 @@ class Section:
             return self.properties[name]
         raise AttributeError(f"'Section' object has no attribute '{name}'")
     
-    
 aisc = Steel('AISC')
 
 # Get the directory of the currently executing module
@@ -51,15 +50,15 @@ module_dir = os.path.dirname(__file__)
 directory_path = os.path.join(module_dir, 'shape files')
 
 # Get a list of all .xlsx files in the directory
-shape_files = glob.glob(os.path.join(directory_path, "*.xlsx"))
+shape_files = glob.glob(os.path.join(directory_path, "*.csv"))
 
 # Iterate over each .xlsx profile file
 for file in shape_files: 
     # Get current shape being considered e.g. 'W_shapes' from file name.
-    cur_profile_name = os.path.basename(file)[:-5]
+    cur_profile_name = os.path.basename(file)[:-4]
 
     # Read Excel file into a pandas DataFrame
-    df = pd.read_excel(file)
+    df = pd.read_csv(file)
 
     # create Profile object for current profile
     cur_profile = Profile(cur_profile_name)
