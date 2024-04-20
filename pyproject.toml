@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "steelpy"
-version = "1.1.0"
+version = "1.1.1"
 description = "A simple library for section properties of AISC steel shapes"
 authors = ["evanfaler <emfaler@gmail.com>"]
 readme = "README.md"
@@ -12,6 +12,8 @@ python = "^3.9"
 pandas = "^2.2.2"
 openpyxl = "^3.1.2"
 
+[project.urls]
+"Homepage" = "https://github.com/evanfaler/steelpy"
 
 [build-system]
 requires = ["poetry-core"]
