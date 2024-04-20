@@ -23,7 +23,42 @@ class Profile:
 
     def add_section(self, name, value):
         self.sections[name] = value
+    
+    def filter(self, criteria, sort_by='weight'):
+        """
+        Filters the self.sections dictionary based on given criteria, max values, min values, or both.
 
+        Args:
+            criteria (dict): Dictionary where keys are properties to filter by and values are dictionaries with 'max' and 'min' keys.
+                example dictionary: {'d': {'min': 10, 'max': 20}, 'Ix': {'min': 500}} will return sections between 10 and 20 inches deep with an Ix greater than 500 in4
+            sort_by (string, optional): property by which the filtered collection will be sorted.  Defaults to section weight.
+
+        Returns:
+            dict: Dictionary of all Section objects that meet the provided criteria.
+        """
+        filtered_dict = {}
+    
+        filtered_dict = {}
+        for section_name in self.sections:
+            section = self.sections[section_name]
+            meets_criteria = True
+            for prop, values in criteria.items():
+                prop_value = getattr(section, prop)
+                if 'min' in values and prop_value < values['min']:
+                    meets_criteria = False
+                    break
+                if 'max' in values and prop_value > values['max']:
+                    meets_criteria = False
+                    break
+            if meets_criteria:
+                filtered_dict[section_name] = section
+
+        # Sort the filtered dictionary by the specified attribute
+        if sort_by:
+            filtered_dict = dict(sorted(filtered_dict.items(), key=lambda item: getattr(item[1], sort_by)))
+
+        return filtered_dict
+    
     def __getattr__(self, name):
         if name in self.sections:
             return self.sections[name]

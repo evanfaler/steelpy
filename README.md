@@ -3,9 +3,11 @@
 `steelpy` is a library that acts a database for AISC steel shapes for easy use in structural calculations and applications.  The library includes W, M, S, HP, WT, MT, ST, Pipe, HSS, L, and Double L profiles.
 
 ## Contents
-* Installation
+* [Installation](#installation)
 
-* Usage
+* [Usage](#usage)
+
+* [Filter Method](#filter-method)
 
 ## Installation
 Install using pip:
@@ -52,5 +54,34 @@ aisc.L_shapes.L4X4X1_4
 aisc.W_shapes.W6X8_5
 ```
 Values are consistent with the AISC Steel Construction Manual, 16th Ed. and use the imperial system (inches, lbs).  .csv files for each library of shapes is saved in steelpy > shape files and can be referenced for the available shape profiles and associated properties.
+
+## Filter Method
+The `filter` method allows you to filter the sections of a collection based on specified criteria, maximum values, minimum values, or a combination thereof. Additionally, you can sort the filtered result by a specified property.
+
+### Parameters
+* `criteria`: A `dictionary` where keys are the properties to filter by, and values are dictionaries with 'min' and/or 'max' keys specifying the minimum and maximum values for each property.
+* `sort_by`: (Optional) The attribute by which to sort the filtered result. Defaults to sort by weight.
+
+### Return Value
+A `dictionary` containing all `Section` objects that meet the provided filtering criteria, sorted by the specified attribute if `sort_by` is provided.
+
+### Usage Example
+```
+# Example usage 1: Filter sections based on a single property with a minimum value and sort the results by another property
+filtered_result = aisc.W_shapes.filter({'Zx': {'min': 150}}, sort_by='Iy')
+
+# Example usage 2: Filter sections based on multiple properties with different maximum and minimum values
+filtered_result = aisc.W_shapes.filter({'d': {'min': 8, 'max': 12.3}, 'Ix': {'max': 100}})
+
+# Access the filtered sections in example 2
+for section_name, section_object in filtered_result.items():
+    print(f"Section: {section_name}, d: {section_object.d}, Ix: {section_object.Ix}")
+
+# Expected output:
+# Section: W12X16, d: 12.0, Ix: 103.0
+# Section: W12X19, d: 12.2, Ix: 130.0
+# Section: W12X22, d: 12.3, Ix: 156.0
+# ...
+```
 
 
