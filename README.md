@@ -57,7 +57,7 @@ aisc.C_shapes.C12X20_7
 aisc.L_shapes.L4X4X1_4
 aisc.W_shapes.W6X8_5
 ```
-Values are consistent with the AISC Steel Construction Manual, 16th Ed. and use the imperial system (inches, lbs).  .csv files for each library of shapes is saved in steelpy > shape files and can be referenced for the available shape profiles and associated properties.
+Values are consistent with the AISC Steel Construction Manual, 16th Ed. and use the imperial system (inches, lbs).  Refer to the [Property Table](#property-table) section for available properties for each collection of profiles.
 
 ## Filter Method
 The `filter` method allows you to filter the sections of a collection based on specified criteria, maximum values, minimum values, or a combination thereof. Additionally, you can sort the filtered result by a specified property.
@@ -75,7 +75,7 @@ A `dictionary` containing all `Section` objects that meet the provided filtering
 filtered_result = aisc.W_shapes.filter({'Zx': {'min': 150}}, sort_by='Iy')
 
 # Example usage 2: Filter sections based on multiple properties with different maximum and minimum values
-filtered_result = aisc.W_shapes.filter({'d': {'min': 8, 'max': 12.3}, 'Ix': {'max': 100}})
+filtered_result = aisc.W_shapes.filter({'d': {'min': 8, 'max': 12.3}, 'Ix': {'min': 100}})
 
 # Access the filtered sections in example 2
 for section_name, section_object in filtered_result.items():
