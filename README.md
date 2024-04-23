@@ -1,6 +1,6 @@
 # SteelPy
 
-`steelpy` is a library that acts a database for AISC steel shapes for easy use in structural calculations and applications.  The library includes W, M, S, HP, WT, MT, ST, Pipe, HSS, L, and Double L profiles.
+`steelpy` is a library that acts as a database for AISC steel shapes for easy use in structural calculations and applications.  The library includes W, M, S, HP, WT, MT, ST, Pipe, HSS, L, and Double L profiles.
 
 ## Contents
 * [Installation](#installation)
