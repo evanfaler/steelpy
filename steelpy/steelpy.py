@@ -1,7 +1,12 @@
-import pandas as pd
-from collections import namedtuple
+import csv
 import os
 import glob
+
+
+def _is_missing(value):
+    # NaN is not equal to itself; None also represents a missing value.
+    return value is None or value != value
+
 
 class Steel:
     def __init__(self, name):
@@ -12,8 +17,9 @@ class Steel:
         self.profiles[name] = value
 
     def __getattr__(self, name):
-        if name in self.profiles:
-            return self.profiles[name]
+        profiles = self.__dict__.get('profiles', {})
+        if name in profiles:
+            return profiles[name]
         raise AttributeError(f"'Steel' object has no attribute '{name}'")
     
 class Profile:
@@ -35,15 +41,17 @@ class Profile:
 
         Returns:
             dict: Dictionary of all Section objects that meet the provided criteria.
+                Missing property values are excluded from criteria and sorted last.
         """
-        filtered_dict = {}
-    
         filtered_dict = {}
         for section_name in self.sections:
             section = self.sections[section_name]
             meets_criteria = True
             for prop, values in criteria.items():
                 prop_value = getattr(section, prop)
+                if _is_missing(prop_value):
+                    meets_criteria = False
+                    break
                 if 'min' in values and prop_value < values['min']:
                     meets_criteria = False
                     break
@@ -55,13 +63,19 @@ class Profile:
 
         # Sort the filtered dictionary by the specified attribute
         if sort_by:
-            filtered_dict = dict(sorted(filtered_dict.items(), key=lambda item: getattr(item[1], sort_by)))
+            def sort_key(item):
+                value = getattr(item[1], sort_by)
+                # Sort known values first and missing values last.
+                return (1, 0) if _is_missing(value) else (0, value)
+
+            filtered_dict = dict(sorted(filtered_dict.items(), key=sort_key))
 
         return filtered_dict
     
     def __getattr__(self, name):
-        if name in self.sections:
-            return self.sections[name]
+        sections = self.__dict__.get('sections', {})
+        if name in sections:
+            return sections[name]
         raise AttributeError(f"'Profile' object has no attribute '{name}'")
     
 class Section:
@@ -73,46 +87,39 @@ class Section:
         self.properties[name] = value
 
     def __getattr__(self, name):
-        if name in self.properties:
-            return self.properties[name]
+        properties = self.__dict__.get('properties', {})
+        if name in properties:
+            return properties[name]
         raise AttributeError(f"'Section' object has no attribute '{name}'")
     
 aisc = Steel('AISC')
 
-# Get the directory of the currently executing module
+# Get the directory of the currently executing module.
 module_dir = os.path.dirname(__file__)
-# Construct the relative path to shape files folder.
+# Construct the relative path to the shape files folder.
 directory_path = os.path.join(module_dir, 'shape files')
-
-# Get a list of all .xlsx files in the directory
+# Get a list of all CSV files in the directory.
 shape_files = glob.glob(os.path.join(directory_path, "*.csv"))
 
-# Iterate over each .xlsx profile file
-for file in shape_files: 
-    # Get current shape being considered e.g. 'W_shapes' from file name.
+# Iterate over each CSV profile file.
+for file in shape_files:
+    # Get the profile name from the filename, for example 'W_shapes'.
     cur_profile_name = os.path.basename(file)[:-4]
-
-    # Read Excel file into a pandas DataFrame
-    df = pd.read_csv(file)
-
-    # create Profile object for current profile
+    # Create a Profile object to hold the sections in this file.
     cur_profile = Profile(cur_profile_name)
-
-    # generate array of section property names from first row of each excel file.
-    section_property_names = df.columns[1:].values
-
-    # iterate over each row of excel file, create new Section object for each row.
-    for index, row in df.iterrows():
-        cur_section_name = row.iloc[0]
-        cur_section = Section(cur_section_name)
-        section_property_values = row[1:].values
-
-        # iterate through each cell of the row and add properties to the Section object.
-        for i, property_name in enumerate(section_property_names):
-            cur_section.add_property(property_name, section_property_values[i])
-        
-        # add the current Section object to the current Profile object.
-        cur_profile.add_section(cur_section_name, cur_section)
-    
-    # Add current Profile object to the Steel object.
+    # Open the CSV file; DictReader uses its header row as the property names.
+    with open(file, newline='', encoding='utf-8') as source:
+        # Create a Section object for each data row in the CSV file.
+        for row in csv.DictReader(source):
+            # Separate the section name from the remaining property values.
+            cur_section_name = row.pop('shape')
+            cur_section = Section(cur_section_name)
+            # Store numeric properties as floats and the '–' missing marker as NaN.
+            cur_section.properties = {
+                name: float(value) if value != '–' else float('nan')
+                for name, value in row.items()
+            }
+            # Add the current Section object to the current Profile object.
+            cur_profile.add_section(cur_section_name, cur_section)
+    # Add the completed Profile object to the Steel object.
     aisc.add_profile(cur_profile_name, cur_profile)

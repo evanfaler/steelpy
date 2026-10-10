@@ -6,14 +6,10 @@ authors = ["evanfaler <emfaler@gmail.com>"]
 readme = "README.md"
 license = "Apache-2.0"
 keywords = ["steel","AISC", "engineering", "shapes_AISC", "AISC Shapes Database v16.0"]
+homepage = "https://github.com/evanfaler/steelpy"
 
 [tool.poetry.dependencies]
 python = "^3.9"
-pandas = "^2.2.2"
-openpyxl = "^3.1.2"
-
-[project.urls]
-"Homepage" = "https://github.com/evanfaler/steelpy"
 
 [build-system]
 requires = ["poetry-core"]

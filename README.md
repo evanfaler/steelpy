@@ -19,6 +19,16 @@ Install using pip:
 pip install steelpy
 ```
 
+SteelPy supports Python 3.9 and newer and has no third-party runtime dependencies.
+
+To run the regression tests from the repository:
+```
+python -m unittest discover -v
+```
+CI runs these tests on Python 3.9–3.14, builds the source distribution and wheel,
+and checks the installed wheel in a clean environment. Independent AISC v16
+reference samples and their provenance are in [tests/fixtures](tests/fixtures/README.md).
+
 ## Usage
 To use the steelpy library, first import the module
 
@@ -87,6 +97,8 @@ for section_name, section_object in filtered_result.items():
 # Section: W12X22, d: 12.3, Ix: 156.0
 # ...
 ```
+Missing CSV entries marked `–` are exposed as numeric `NaN` values (not a number). Filters exclude sections whose requested property is missing, and sorting places missing values last. Property names are case-sensitive: `H` is the unitless flexural constant, `h` is HSS flat-wall depth, `T` is the clear distance between web fillets, and `t` is angle thickness.
+
 ### Property Table
 | **Attribute** | **C**   | **DBL_L** | **HP**  | **HSS_R** | **HSS** | **L**   | **M**   | **MC**  | **MT**  | **PIPE** | **S**   | **ST**  | **W**   | **WT**  |
 |:-------------:|:-------:|:---------:|:-------:|:---------:|:-------:|:-------:|:-------:|:-------:|:-------:|:--------:|:-------:|:-------:|:-------:|:-------:|
@@ -117,16 +129,19 @@ for section_name, section_object in filtered_result.items():
 | **Qf**        | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
 | **Qw**        | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
 | **ro**        | &check; | &check;   | _       | _         | _       | &check; | _       | &check; | &check; | _        | _       | &check; | _       | &check; |
-| **H**         | &check; | &check;   | _       | _         | &check; | &check; | _       | &check; | &check; | _        | _       | &check; | _       | &check; |
+| **H**         | &check; | &check;   | _       | _         | _       | &check; | _       | &check; | &check; | _        | _       | &check; | _       | &check; |
+| **h** | _ | _ | _ | _ | &check; | _ | _ | _ | _ | _ | _ | _ | _ | _ |
 | **rts**       | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
 | **ho**        | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
 | **PA**        | &check; | _         | &check; | _         | _       | &check; | &check; | &check; | _       | _        | &check; | _       | &check; | &check; |
 | **PB**        | &check; | _         | &check; | _         | _       | &check; | &check; | &check; | _       | _        | &check; | _       | &check; | &check; |
 | **PC**        | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | &check; |
 | **PD**        | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | &check; |
-| **T**         | &check; | &check;   | &check; | _         | _       | &check; | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
+| **T**         | &check; | _         | &check; | _         | _       | _       | &check; | &check; | _       | _        | &check; | _       | &check; | _       |
+| **t** | _ | &check; | _ | _ | _ | &check; | _ | _ | _ | _ | _ | _ | _ | _ |
 | **WGi**       | &check; | _         | &check; | _         | _       | _       | &check; | &check; | &check; | _        | &check; | &check; | &check; | &check; |
-| **b**         | _       | &check;   | _       | _         | _       | &check; | _       | _       | _       | _        | _       | _       | _       | _       |
+| **b**         | _       | &check;   | _       | _         | &check; | &check; | _       | _       | _       | _        | _       | _       | _       | _       |
+| **B** | _ | _ | _ | _ | &check; | _ | _ | _ | _ | _ | _ | _ | _ | _ |
 | **y**         | _       | &check;   | _       | _         | _       | &check; | _       | _       | &check; | _        | _       | &check; | _       | &check; |
 | **yp**        | _       | &check;   | _       | _         | _       | &check; | _       | _       | &check; | _        | _       | &check; | _       | &check; |
 | **k1**        | _       | _         | &check; | _         | _       | _       | &check; | _       | _       | _        | _       | _       | &check; | _       |
@@ -187,16 +202,19 @@ for section_name, section_object in filtered_result.items():
 | **Qf**        | Statical moment for a point in the flange directly above the vertical edge of the web, as used in AISC Design Guide 9, in.3                                                                                                                                                                                                                                                   |
 | **Qw**        | Statical moment for a point at mid-depth of the cross section, as used in AISC Design Guide 9, in.3                                                                                                                                                                                                                                                                           |
 | **ro**        | Polar radius of gyration about the shear center, in.                                                                                                                                                                                                                                                                                                                          |
-| **H**         | Depth of the flat wall of square HSS or longer flat wall of rectangular HSS, in.                                                                                                                                                                                                                                                                                              |
+| **H**         | Flexural constant, dimensionless.                                                                                                                                                                                                                                                                                                                                             |
+| **h** | Depth of the flat wall of square HSS or longer flat wall of rectangular HSS, in. |
 | **rts**       | Effective radius of gyration, in.                                                                                                                                                                                                                                                                                                                                             |
 | **ho**        | Distance between the flange centroids, in.                                                                                                                                                                                                                                                                                                                                    |
 | **PA**        | Shape perimeter minus one flange surface , as used in Design Guide 19, in.                                                                                                                                                                                                                                                                                                    |
 | **PB**        | Shape perimeter, as used in AISC Design Guide 19, in.                                                                                                                                                                                                                                                                                                                         |
 | **PC**        | Box perimeter minus one flange surface, as used in Design Guide 19, in.                                                                                                                                                                                                                                                                                                       |
 | **PD**        | Box perimeter, as used in AISC Design Guide 19, in.                                                                                                                                                                                                                                                                                                                           |
-| **T**         | Thickness of angle leg, in.                                                                                                                                                                                                                                                                                                                                                   |
+| **T**         | Distance between web toes of fillets at top and bottom of web, in.                                                                                                                                                                                                                                                                                                            |
+| **t** | Thickness of angle leg, in. |
 | **WGi**       | The workable gage for the inner fastener holes in the flange that provides for entering and tightening clearances and edge distance and spacing requirements. The actual size, combination, and orientation of fastener components should be compared with the geometry of the cross section to ensure compatibility. See AISC Manual Part 1 for additional information, in.  |
-| **b**         | Overall width of square HSS or shorter wall of rectangular HSS, in.                                                                                                                                                                                                                                                                                                           |
+| **b**         | Width of the flat wall of square HSS or shorter flat wall of rectangular HSS, or width of the longer leg for angles, or width of the back-to-back legs of long legs back-to-back double angles, or width of the outstanding legs of short legs back-to-back double angles, in.                                                                                                |
+| **B** | Overall width of square HSS or shorter wall of rectangular HSS, in. |
 | **y**         | Vertical distance from designated edge of member, as defined in the AISC Steel Construction Manual Part 1, to center of gravity of member, in.                                                                                                                                                                                                                                |
 | **yp**        | Vertical distance from designated edge of member, as defined in the AISC Steel Construction Manual Part 1, to plastic neutral axis of member, in.                                                                                                                                                                                                                             |
 | **k1**        | Distance from web center line to flange toe of fillet used for detailing, in.                                                                                                                                                                                                                                                                                                 |
