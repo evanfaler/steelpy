@@ -12,7 +12,9 @@ from steelpy import aisc
 class InstalledWheelTests(unittest.TestCase):
     def test_wheel_has_all_profiles_and_no_runtime_dependencies(self):
         repository = Path(__file__).resolve().parents[1]
-        self.assertNotIn(repository, Path(steelpy.__file__).resolve().parents)
+        # CI may create its virtual environment inside the checkout.
+        self.assertNotEqual(repository / 'steelpy' / '__init__.py',
+                            Path(steelpy.__file__).resolve())
         self.assertFalse(importlib.metadata.requires('steelpy'))
         self.assertEqual(len(aisc.profiles), 14)
         self.assertEqual(sum(len(p.sections) for p in aisc.profiles.values()), 2299)
